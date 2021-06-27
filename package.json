@@ -1,5 +1,5 @@
 {
-  "name": "homebridge-purple-powerbase",
+  "name": "@jbyerline/homebridge-purple-powerbase",
   "version": "1.0.0",
   "author": "jbyerline",
   "description": "HomeKit Purple Powerbase connector. Requires use of additional Flask server",
@@ -25,5 +25,9 @@
   },
   "bugs": {
     "url": "https://github.com/jbyerline/homebridge-purple-powerbase.git/issues"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

@@ -14,6 +14,7 @@ function Powerbase(log, config) {
     this.log = log;
     this.name = config.name;
     this.baseUrl = config.base_url;
+    this.ledType = config.led_type;
 }
 
 Powerbase.prototype = {
@@ -45,7 +46,7 @@ Powerbase.prototype = {
     },
 
     getLowerHeight: function (callback) {
-        request(this.baseUrl + "/getUpperLower", (err, resp, body) => {
+        request(this.baseUrl + "/getLowerHeight", (err, resp, body) => {
             if(err){
                 this.log(err)
             }
@@ -122,7 +123,7 @@ Powerbase.prototype = {
         })
     },
 
-    setLight: function (value, callback) {
+    setBluetoothLight: function (value, callback) {
         this.isOn = value
         if(value === true){
             request(this.baseUrl + "/light/on", (err, resp, body) => {
@@ -134,8 +135,32 @@ Powerbase.prototype = {
             })
         }
     },
-    getLight: function (callback) {
+    getBluetoothLight: function (callback) {
         request(this.baseUrl + "/light/status", (err, resp, body) => {
+            if(body == 0){
+                this.isOn = false
+            } else {
+                this.log()
+                this.isOn = true
+            }
+            callback(null, this.isOn)
+        })
+    },
+
+    setGPIOLight: function (value, callback) {
+        this.isOn = value
+        if(value === true){
+            request(this.baseUrl + "/GPIOlight/on", (err, resp, body) => {
+                callback(null)
+            })
+        } else {
+            request(this.baseUrl + "/GPIOlight/off", (err, resp, body) => {
+                callback(null)
+            })
+        }
+    },
+    getGPIOLight: function (callback) {
+        request(this.baseUrl + "/GPIOlight/status", (err, resp, body) => {
             if(body == 0){
                 this.isOn = false
             } else {
@@ -186,17 +211,23 @@ Powerbase.prototype = {
             .on('get', this.getLowerVib.bind(this))
             .on('set', this.setLowerVib.bind(this));
 
-        lightService.getCharacteristic(Characteristic.On)
-            .on('get', this.getLight.bind(this))
-            .on('set', this.setLight.bind(this))
-
+        if(this.ledType === "bluetooth"){
+            lightService.getCharacteristic(Characteristic.On)
+                .on('get', this.getBluetoothLight.bind(this))
+                .on('set', this.setBluetoothLight.bind(this))
+        }
+        else if(this.ledType === "GPIO"){
+            lightService.getCharacteristic(Characteristic.On)
+                .on('get', this.getGPIOLight.bind(this))
+                .on('set', this.setGPIOLight.bind(this))
+        }
 
         // Add bed services to service array
         this.services.push(informationService);
         this.services.push(headRaiseService);
-        this.services.push(footRaiseService);
         this.services.push(headVibService);
         this.services.push(footVibService);
+        this.services.push(footRaiseService);
         this.services.push(lightService);
 
         return this.services;
