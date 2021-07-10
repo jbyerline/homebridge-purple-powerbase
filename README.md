@@ -13,7 +13,7 @@ Once that is completed you can update your config file to match the pattern belo
 {
     "accessory": "Purple Powerbase",
     "name": "Purple Powerbase",
-    "base_url": "http://10.0.0.214:8000"
+    "base_url": "http://10.0.0.214:8000",
     "led_type": "bluetooth"
 }
 ```
